@@ -1,23 +1,47 @@
-E-Commerce ETL Pipeline + Power BI Dashboard
-Overview
-This project demonstrates an end-to-end ETL pipeline using Amazon S3, Amazon Redshift, and Power BI to analyze and visualize e-commerce sales data. The workflow involves data extraction from a CSV file stored in S3, data transformation in Redshift, and the final data visualization in Power BI.
+🛒 E-Commerce ETL Pipeline + Power BI Dashboard
+Project Overview
+This project demonstrates a complete end-to-end ETL pipeline using Amazon S3, Amazon Redshift, and Power BI to analyze and visualize e-commerce sales data. The process covers:
 
-Tech Stack:
-AWS S3: Cloud storage for raw CSV data
+Data Extraction from raw CSV files stored in S3
 
-Amazon Redshift: Fully managed data warehouse to process, store, and analyze data
+Data Transformation in Redshift using SQL queries
 
-Power BI: Data visualization tool for creating interactive dashboards
+Data Visualization in Power BI for business insights
 
+Tech Stack
+Layer	Tool/Service
+🧊 Storage	Amazon S3
+🏢 Warehouse	Amazon Redshift
+🛠️ Transformation	SQL in Redshift
+📊 Dashboard	Power BI
+📂 Versioning	Git + GitHub
+Project Structure
+pgsql
+Copy
+ecommerce-etl-powerbi-dashboard/
+├── aws/                
+│   ├── redshift_queries/    
+│   │   ├── create_table.sql        # Redshift Table Creation SQL
+│   │   ├── copy_data.sql           # COPY Command to Load Data into Redshift
+│   │   └── create_view.sql         # SQL to Create Views for Data Aggregation
+│   ├── s3_bucket/                 # S3 bucket configuration
+│   └── README.md                  # Project Documentation (You’re Here!)
+├── powerbi/                       
+│   ├── ecommerce_dashboard.pbix   # Power BI Dashboard File
+├── data/                         
+│   ├── ecommercesalesanalysis.csv  # Raw Data in CSV Format
+└── README.md                      # Project Documentation
+ETL Pipeline Breakdown
+1. Data Storage - Amazon S3
+Raw e-commerce sales data (ecommercesalesanalysis.csv) is stored in an Amazon S3 bucket named ecommerce-etl-bucket.
 
-AWS Setup
-1. Amazon S3 Bucket Setup
-Raw e-commerce sales data (ecommercesalesanalysis.csv) is stored in an S3 bucket called ecommerce-etl-bucket.
+The COPY command is used to load the data into Amazon Redshift for further analysis.
 
-The data is loaded into Redshift using the COPY command.
+2. Data Transformation - Amazon Redshift
+Data is processed in Redshift using SQL queries. A table is created to store product-level sales data:
 
-2. Redshift Table Setup
-The ecommerce_sales table was created in Redshift to store e-commerce sales data using the following SQL:
+sql
+Copy
 CREATE TABLE ecommerce_sales (
     product_id INT,
     product_name VARCHAR(100),
@@ -27,29 +51,20 @@ CREATE TABLE ecommerce_sales (
     review_count INT,
     sales_month_1 INT,
     sales_month_2 INT,
-    sales_month_3 INT,
-    sales_month_4 INT,
-    sales_month_5 INT,
-    sales_month_6 INT,
-    sales_month_7 INT,
-    sales_month_8 INT,
-    sales_month_9 INT,
-    sales_month_10 INT,
-    sales_month_11 INT,
+    ...
     sales_month_12 INT
 );
-3. Data Loading into Redshift
-The COPY command was used to load data from the S3 bucket into Redshift:
+The COPY command loads the raw data from S3 into Redshift:
+
+sql
+Copy
 COPY ecommerce_sales
 FROM 's3://ecommerce-etl-bucket/ecommercesalesanalysis.csv'
 IAM_ROLE 'arn:aws:iam::420509932103:role/RedshiftS3AccessRole'
 FORMAT AS CSV
 IGNOREHEADER 1
 REGION 'us-east-2';
-This command extracts the data from S3 and loads it into the ecommerce_sales table in Redshift.
-
-4. Redshift Data Transformation
-A view was created in Redshift to calculate monthly and total revenue for each product:
+A view is created to calculate the total revenue for each product:
 
 sql
 Copy
@@ -62,33 +77,42 @@ SELECT
     review_score,
     review_count,
     (price * sales_month_1) AS revenue_month_1,
-    (price * sales_month_2) AS revenue_month_2,
-    (price * sales_month_3) AS revenue_month_3,
     ...
     (price * (sales_month_1 + sales_month_2 + ...)) AS total_revenue
 FROM ecommerce_sales;
 Power BI Dashboard
-The processed data from Redshift is visualized in Power BI. The dashboard includes:
+The data processed in Redshift is visualized in Power BI. The dashboard includes:
 
-KPI Cards for key metrics such as total revenue, average review score, and review count.
+KPI Cards for total revenue, average review score, and review count
 
-Bar Chart showing the top products by revenue.
+Bar Chart showing the top products by revenue
 
-Donut Chart for revenue distribution across different categories.
+Donut Chart for revenue distribution across different categories
 
-Scatter Plot to visualize the relationship between review score and total revenue.
+Scatter Plot to visualize the relationship between review score and total revenue
 
 How to Run This
-Clone this repository to get the project files.
+Clone the repository.
 
-Set up your own AWS environment with S3 and Redshift (refer to the AWS documentation).
+Set up your AWS environment:
 
-Upload the CSV file to S3 and use the COPY command to load the data into Redshift.
+Create an S3 bucket and upload the CSV file.
 
-Use Power BI to connect to Redshift and create the visualizations (as shown in the Power BI file).
+Set up Redshift and create the necessary tables and views using the provided SQL files.
+
+Power BI:
+
+Connect Power BI to Redshift and load the data to create the dashboard.
+
+You can use the ecommerce_dashboard.pbix file as a starting template.
 
 Screenshots
 
 
+Additional Features
+Scalability: The pipeline can be extended to include more product attributes, additional sales data, or deeper insights.
+
+Automation: This pipeline can be automated using AWS Lambda or other automation tools for regular data updates.
+
 Final Thoughts
-This project showcases the ability to use AWS for cloud-based data management (S3 and Redshift) and Power BI for creating meaningful visualizations. The pipeline takes raw data from S3, processes it in Redshift, and provides valuable insights through Power BI dashboards.
+This project demonstrates the ability to use AWS for cloud-based data storage and processing (S3 & Redshift), along with Power BI for data visualization, enabling businesses to gain valuable insights from e-commerce sales data.
