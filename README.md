@@ -126,3 +126,4 @@ Automation: This pipeline can be automated using AWS Lambda or other automation 
 
 Final Thoughts
 This project demonstrates how to leverage AWS for cloud-based data storage and processing (S3 & Redshift), combined with Power BI for interactive data visualizations. This end-to-end pipeline enables businesses to extract valuable insights from their e-commerce sales data.
+
